@@ -5,6 +5,6 @@ XS-Leaks
 1. [Cache with referrer](https://xsleaks.github.io/xsleaks/examples/cache-referrer/index.html)
 
 ### Wiki
-1. [Home](wiki)
-2. [Browser-Side-Channels](wiki/Browser-Side-Channels)
-3. [Links](wiki/Links)
+1. [Home](https://github.com/xsleaks/xsleaks/wiki)
+2. [Browser-Side-Channels](https://github.com/xsleaks/xsleaks/wiki/Browser-Side-Channels)
+3. [Links](https://github.com/xsleaks/xsleaks/wiki/Links)
