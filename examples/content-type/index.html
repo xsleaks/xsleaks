@@ -27,9 +27,10 @@
                 x.src = `data:text/html,<object data="${url}" type=text/html typemustmatch></object>`;
                 x.onload = function(){
                     let html = x.contentWindow.length;
-                    _console.innerHTML += `<p style="color:${html? 'green': 'red'}">Resource '${url}' ${html? 'has': 'has not'} text/html MIME type.</span>`
+                    _console.innerHTML += `<p style="color:${html? 'green': 'red'}">Resource '${url}' ${html? 'has': 'has not'} text/html MIME type.</span>`;
+                    x.remove();
                 }
-                document.head.appendChild(x);
+                document.body.appendChild(x);
             }
         </script>
     </body>
