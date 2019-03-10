@@ -24,7 +24,10 @@
                 let url = form.url.value.trim();
                 
                 var x = document.createElement('iframe');
-                x.src = `data:text/html,<object data="${url}" type=text/html typemustmatch></object>`;
+                x.src = `data:text/html,\
+                <meta http-equiv="Content-Security-Policy" content="plugin-types text/html">
+                <object data="${url}" type=text/html typemustmatch></object>
+                `;
                 x.onload = function(){
                     let html = x.contentWindow.length;
                     _console.innerHTML += `<p style="color:${html? 'green': 'red'}">Resource '${url}' ${html? 'has': 'has not'} text/html MIME type.</span>`;
