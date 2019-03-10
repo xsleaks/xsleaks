@@ -1,0 +1,38 @@
+<html>
+    <head>
+        <title>Content-type detector</title>
+        <meta charset="UTF-8">
+        <style>
+            #_console p{
+                font-weight: 700;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Content-type text/html detector</h1>
+        <form id=form method="POST">
+            <input name="url" placeholder="url"/>
+            <button>check</button>
+        </form>
+
+        <div id='_console'></div>
+
+        <script>
+            form.onsubmit = function(e){
+                e.preventDefault();
+
+                let url = form.url.value.trim();
+                
+                var x = document.createElement('iframe');
+                x.src = `data:text/html,<object data="${url}" type=text/html typemustmatch></object>`;
+                x.onload = function(){
+                    let html = x.contentWindow.length;
+                    _console.innerHTML += `<p style="color:${html? 'green': 'red'}">Resource '${url}' ${html? 'has': 'has not'} text/html MIME type.</span>`
+                }
+                document.head.appendChild(x);
+            }
+        </script>
+    </body>
+    
+
+</html>
