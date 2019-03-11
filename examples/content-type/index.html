@@ -12,6 +12,7 @@
         <h1>Content-type text/html detector</h1>
         <form id=form method="POST">
             <input name="url" placeholder="url"/>
+            <input name="mime" value="text/html" placeholder="text/html"/>
             <button>check</button>
         </form>
 
@@ -22,19 +23,22 @@
                 e.preventDefault();
 
                 let url = form.url.value.trim();
-                
+                let mime = form.mime.value.trim();
+
                 var x = document.createElement('iframe');
                 x.src = `data:text/html,\
-                <meta http-equiv="Content-Security-Policy" content="plugin-types text/html">
-                <object data="${url}" type=text/html typemustmatch></object>
+                <object id=obj type="${mime}" data="${url}" typemustmatch><script>onload = ()=>top.postMessage(JSON.stringify({u:"${url}", h:obj.clientHeight, m:"${mime}"}), '*');%3c/script></object>
                 `;
                 x.onload = function(){
-                    let html = x.contentWindow.length;
-                    _console.innerHTML += `<p style="color:${html? 'green': 'red'}">Resource '${url}' ${html? 'has': 'has not'} text/html MIME type.</span>`;
                     x.remove();
                 }
                 document.body.appendChild(x);
             }
+
+            onmessage = e=>{
+                let data = JSON.parse(e.data);
+                _console.innerHTML += `<p style="color:${data.h? 'green': 'red'}">Resource '${data.u}' ${data.h? 'has': 'has no'} ${data.m} MIME type.</span>`;
+            };
         </script>
     </body>
     
