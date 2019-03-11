@@ -9,7 +9,7 @@
         </style>
     </head>
     <body>
-        <h1>Content-type text/html detector</h1>
+        <h1>Content-type detector</h1>
         <form id=form method="POST">
             <input name="url" placeholder="url"/>
             <input name="mime" value="text/html" placeholder="text/html"/>
@@ -27,10 +27,10 @@
 
                 var x = document.createElement('iframe');
                 x.src = `data:text/html,\
-                <object id=obj type="${mime}" data="${url}" typemustmatch><script>onload = ()=>top.postMessage(JSON.stringify({u:"${url}", h:obj.clientHeight, m:"${mime}"}), '*');%3c/script></object>
+                <object id=obj type="${mime}" data="${url}" typemustmatch><script>onload = ()=>top.postMessage(JSON.stringify({u:"${url}", h:obj.clientHeight, m:"${mime}"}), '*');console.dir(obj)%3c/script></object>
                 `;
                 x.onload = function(){
-                    x.remove();
+                   x.remove();
                 }
                 document.body.appendChild(x);
             }
@@ -38,6 +38,7 @@
             onmessage = e=>{
                 let data = JSON.parse(e.data);
                 _console.innerHTML += `<p style="color:${data.h? 'green': 'red'}">Resource '${data.u}' ${data.h? 'has': 'has no'} ${data.m} MIME type.</span>`;
+                console.log(data);
             };
         </script>
     </body>
