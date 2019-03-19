@@ -3,43 +3,68 @@
         <title>Content-type detector</title>
         <meta charset="UTF-8">
         <style>
-            #_console p{
-                font-weight: 700;
+            #_console p {
+              font-weight: 700;
+            }
+
+            iframe {
+              width: 1px;
+              height: 1px;
+              border: 0;
+              opacity: 0;
             }
         </style>
     </head>
     <body>
         <h1>Content-type detector</h1>
+        <small><i>Works in FireFox</i></small>
+        <br><hr><br>
         <form id=form method="POST">
-            <input name="url" placeholder="url"/>
-            <input name="mime" value="text/html" placeholder="text/html"/>
-            <button>check</button>
+          <input name="url" placeholder="https://" />
+          <button>check</button>
         </form>
 
         <div id='_console'></div>
 
         <script>
-            form.onsubmit = function(e){
-                e.preventDefault();
+         const mimes = ['text/plain', 'text/html', 'text/javascript', 
+        'text/css', 'image/bmp', 'image/png', 'image/svg+xml', 
+        'image/gif', 'image/jpeg', 'application/json', 'application/pdf', 
+        'audio/mpeg', 'video/mpeg', 'font/ttf', 'application/xhtml+xml'];
 
-                let url = form.url.value.trim();
-                let mime = form.mime.value.trim();
-
-                var x = document.createElement('iframe');
-                x.src = `data:text/html,\
-                <object id=obj type="${mime}" data="${url}" typemustmatch><script>onload = ()=>top.postMessage(JSON.stringify({u:"${url}", h:obj.clientHeight, m:"${mime}"}), '*');console.dir(obj)%3c/script></object>
-                `;
-                x.onload = function(){
-                   x.remove();
-                }
-                document.body.appendChild(x);
+        async function spawnPromise(url, mime){
+          let x = document.createElement('iframe');
+          x.srcdoc = `<object id=obj type="${mime}" data="${url}" \
+          typemustmatch></object>`;
+          return new Promise(resolve=>{
+            x.onload = () => {
+              resolve(x.contentWindow.obj.clientHeight? mime: '');
+              x.remove();
             }
+            document.body.appendChild(x);
+          });
+        }
 
-            onmessage = e=>{
-                let data = JSON.parse(e.data);
-                _console.innerHTML += `<p style="color:${data.h? 'green': 'red'}">Resource '${data.u}' ${data.h? 'has': 'has no'} ${data.m} MIME type.</span>`;
-                console.log(data);
-            };
+        async function checkAll(url){
+          let promises = [];
+          for(let mime of mimes) promises.push(spawnPromise(url, mime));
+          let values = await Promise.all(promises);
+          values = values.filter(x=>x);
+          msg(values.length, url, values.pop());
+        }
+
+        form.onsubmit = function(e) {
+          e.preventDefault();
+          let url = form.url.value.trim();
+          checkAll(url);
+        }
+
+        function msg(found, url, mime) {
+          _console.innerHTML += `
+        <p style="color:${found? 'green': 'red'}">\
+        Resource '${url}' ${found? `responded with ${mime} MIME type.</p>`:
+        'responded with error'}`;
+        }
         </script>
     </body>
     
