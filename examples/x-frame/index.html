@@ -43,6 +43,7 @@
           _console.innerHTML += `
         <p class="${found? 'found': 'error'}">
         Resource <span class="url">${url}</span> <span class="mime">${found?'not blocked':'blocked'}</span>`;
+        _console.scrollTop = _console.scrollHeight;
         }
         </script>
     </body>
