@@ -9,3 +9,4 @@ XS-Leaks
 1. [Home](https://github.com/xsleaks/xsleaks/wiki)
 2. [Browser-Side-Channels](https://github.com/xsleaks/xsleaks/wiki/Browser-Side-Channels)
 3. [Links](https://github.com/xsleaks/xsleaks/wiki/Links)
+4. [Real-World-Examples](https://github.com/xsleaks/xsleaks/wiki/Real-World-Examples)
