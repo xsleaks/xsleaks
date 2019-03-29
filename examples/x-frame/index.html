@@ -17,12 +17,11 @@
 
         <script>
         async function spawnPromise(url){
-          let x = document.createElement('iframe');
+          let x = document.createElement('embed');
           x.src = url;
           return new Promise(resolve=>{
-            x.onload = () => {
+            x.onload = x.onerror = () => {
               resolve(performance.getEntriesByType("resource").filter(e=>e.name.indexOf(url)!=-1).length);
-              x.remove();
             }
             document.body.appendChild(x);
           });
