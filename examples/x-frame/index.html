@@ -5,7 +5,7 @@
         <style>*{font-family:Mukta,sans-serif;color:#3b3b3b}input{background:inherit}#_console{max-width:720px;max-height:200px;overflow-y:hidden;overflow-x:hidden}#_console:hover{overflow-y:scroll}#_console p{font-weight:300;padding:4px 7px;margin:5px;color:#424242;max-width:700px}iframe{width:1px;height:1px;border:0;opacity:0}small{color:gray;font-weight:400;font-style:italic;font-size:16px;margin-top:-20px;display:block;margin-bottom:30px}small strong{font-weight:600;font-size:18px;color:inherit}input{width:515px;font-size:20px;padding:6px 10px;border:1px solid gray;border-radius:6px;margin:3px;margin-left:0}button{font-size:20px;padding:6px 10px;border-radius:6px;border:1px solid gray;background:gray;color:#fff;cursor:pointer;margin:3px;margin-left:0;margin-bottom:20px}h1{margin-top:40px;color:#424242}.found{background:#e0f2d5}.error{background:#ffd9d9}.mime{font-weight:600}.url{color:gray}</style>
     </head>
     <body>
-        <h1>X-Frame-Options Detector</h1>
+        <h1>X-Frame-Options and Status Type Detector</h1>
         <small>Compatible with <strong>Chrome</strong></small>
 
         <form id=form method="POST">
@@ -42,7 +42,7 @@
         function msg(found, url) {
           _console.innerHTML += `
         <p class="${found? 'found': 'error'}">
-        Resource <span class="url">${url}</span> <span class="mime">${found?'not blocked':'blocked'}</span>`;
+        Resource <span class="url">${url}</span> <span class="mime">${found?'not blocked':'blocked / errored'}</span>`;
         _console.scrollTop = _console.scrollHeight;
         }
         </script>
