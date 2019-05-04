@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>XSLeaks Cache-API</title>
+
+    <style>
+        input {
+            padding: 8px;
+            outline: none;
+            font-size: 16px;
+            min-width: 320px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            border: 1px solid #222;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- We use an iframe to hide our referrer manipulation -->
+    <iframe style="display:none;" src="./api.html" onload="main()" id="api"></iframe>
+
+    <input placeholder="https://..." id="resource_url" />
+
+    <div>
+        <button id="in_cache_button">In cache?</button>
+        <button id="evict_from_cache_button">Evict from cache</button>
+    </div>
+
+    <script type="text/javascript">
+        async function main() {
+            const api = document.getElementById('api').contentWindow;
+
+            const resourceUrl = document.getElementById('resource_url');
+
+            const inCacheButton = document.getElementById('in_cache_button'),
+                evictFromCacheButton = document.getElementById('evict_from_cache_button');
+
+            inCacheButton.addEventListener('click', async () => {
+                if (resourceUrl.value.match(/^https?/) === null) {
+                    return alert("Invalid URL");
+                }
+
+                const result = await api.inCache(resourceUrl.value);
+                alert(result ? 'Yes' : 'No');
+            });
+
+            evictFromCacheButton.addEventListener('click', async () => {
+                if (resourceUrl.value.match(/^https?/) === null) {
+                    return alert("Invalid URL");
+                }
+
+                const isInCache = await api.inCache(resourceUrl.value);
+
+                if (isInCache === false) {
+                    return alert('No need to evict this resource since its not in cache.');
+                }
+
+                const result = await api.evictCache(resourceUrl.value);
+                alert(result ? 'Evicted' : 'Error');
+            });
+        };
+    </script>
+</body>
+
+</html>
