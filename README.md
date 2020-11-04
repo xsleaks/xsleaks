@@ -3,8 +3,7 @@ XS-Leaks
 
 ### Examples
 1. [Cache with referrer](https://xsleaks.github.io/xsleaks/examples/cache-referrer/index.html)
-2. [Detecting content-type](https://xsleaks.github.io/xsleaks/examples/content-type/index.html) (works in Firefox)
-3. [Detecting x-frame-options](https://xsleaks.github.io/xsleaks/examples/x-frame/index.html) (works in Chrome)
+2. [Detecting x-frame-options](https://xsleaks.github.io/xsleaks/examples/x-frame/index.html) (works in Chrome)
 
 ### Wiki
 1. [Home](https://github.com/xsleaks/xsleaks/wiki)
