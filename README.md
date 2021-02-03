@@ -1,6 +1,8 @@
 XS-Leaks
 ===
 
+**There is a new updated & refreshed wiki [github.com/xsleaks/wiki](https://github.com/xsleaks/wiki) rendered at [xsleaks.dev](https://xsleaks.dev/)**
+
 ### Examples
 1. [Cache with referrer](https://xsleaks.github.io/xsleaks/examples/cache-referrer/index.html)
 2. [Detecting x-frame-options](https://xsleaks.github.io/xsleaks/examples/x-frame/index.html) (works in Chrome)
